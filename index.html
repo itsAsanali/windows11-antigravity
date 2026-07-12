@@ -1,0 +1,3822 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 11 by Antigravity AI</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- Google Fonts for Segoe UI alternatives: Outfit and Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Windows 11-like icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom variables for Windows 11 Fluent design system */
+        :root {
+            --bg-light-acrylic: rgba(243, 243, 243, 0.65);
+            --bg-dark-acrylic: rgba(32, 32, 32, 0.75);
+            --border-light: rgba(255, 255, 255, 0.3);
+            --border-dark: rgba(255, 255, 255, 0.08);
+            --text-light: #1c1c1c;
+            --text-dark: #f5f5f5;
+            
+            --accent-color: #0078d4;
+            --accent-hover: #106ebe;
+            --accent-light: #0078d420;
+            
+            --panel-radius: 8px;
+            --window-radius: 8px;
+            --btn-radius: 4px;
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+            --transition-elastic: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --transition-fast: all 0.15s ease-out;
+            
+            /* Theme State (Light theme by default, overridden by JS) */
+            --bg-panel: var(--bg-light-acrylic);
+            --border-panel: var(--border-light);
+            --text-main: var(--text-light);
+            --text-secondary: #5f5f5f;
+            --shadow-main: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
+            --shadow-window: 0 12px 48px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-theme {
+            --bg-panel: var(--bg-dark-acrylic);
+            --border-panel: var(--border-dark);
+            --text-main: var(--text-dark);
+            --text-secondary: #b3b3b3;
+            --shadow-main: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+            --shadow-window: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
+            --border-light: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Reset and Core Layout */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Inter', -apple-system, sans-serif;
+            color: var(--text-main);
+            background-color: #000;
+        }
+
+        /* Wallpaper layer with zoom effects and fallback */
+        #wallpaper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('wallpaper.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: transform 1.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+            z-index: 1;
+        }
+
+        .wallpaper-zoom {
+            transform: scale(1.05);
+        }
+
+        /* Desktop grid */
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding-bottom: 48px; /* Taskbar offset */
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .desktop-icons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            height: calc(100% - 70px);
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(auto-fill, 90px);
+            grid-template-columns: repeat(auto-fill, 90px);
+            gap: 15px;
+            z-index: 5;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90px;
+            height: 90px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            padding: 5px;
+        }
+
+        .desktop-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-theme .desktop-icon:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .desktop-icon:active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            pointer-events: none;
+        }
+
+        .icon-wrapper img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .desktop-icon:hover .icon-wrapper img {
+            transform: scale(1.08);
+        }
+
+        .desktop-icon span {
+            font-size: 11.5px;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            width: 100%;
+        }
+
+        /* Taskbar styling */
+        #taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 48px;
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(20px) saturate(125%);
+            -webkit-backdrop-filter: blur(20px) saturate(125%);
+            border-top: 1px solid var(--border-panel);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            z-index: 9999;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+            transition: var(--transition-smooth);
+        }
+
+        .taskbar-left, .taskbar-right {
+            display: flex;
+            align-items: center;
+            width: 20%;
+            height: 100%;
+        }
+
+        .taskbar-left {
+            justify-content: flex-start;
+        }
+
+        .taskbar-right {
+            justify-content: flex-end;
+        }
+
+        .taskbar-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            gap: 4px;
+            height: 100%;
+        }
+
+        /* Taskbar Icon containers */
+        .taskbar-icon-container {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .taskbar-icon-container:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-theme .taskbar-icon-container:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .taskbar-icon-container:active {
+            transform: scale(0.9);
+        }
+
+        .tb-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .taskbar-icon-container:hover .tb-icon {
+            transform: scale(1.1);
+        }
+
+        /* App indicator under taskbar icon */
+        .indicator {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+            transition: var(--transition-elastic);
+        }
+
+        .taskbar-icon-container.running .indicator {
+            width: 6px;
+        }
+
+        .taskbar-icon-container.active .indicator {
+            width: 14px;
+            background-color: var(--accent-color);
+        }
+
+        /* Tray area elements */
+        .taskbar-icon-tray-btn {
+            width: 32px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-main);
+        }
+
+        .taskbar-icon-tray-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .taskbar-system-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 8px;
+            height: 38px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .taskbar-system-group:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-theme .taskbar-system-group:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .tray-icon {
+            font-size: 13px;
+            color: var(--text-main);
+        }
+
+        .taskbar-lang {
+            height: 38px;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .taskbar-lang:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .taskbar-clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            height: 38px;
+            padding: 0 8px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-main);
+            text-align: right;
+        }
+
+        .taskbar-clock-container:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .clock-time {
+            margin-bottom: 1px;
+        }
+
+        .clock-date {
+            font-size: 10px;
+            opacity: 0.85;
+        }
+
+        .show-desktop-bar {
+            width: 4px;
+            height: 100%;
+            border-left: 1px solid rgba(128, 128, 128, 0.3);
+            margin-left: 6px;
+            cursor: pointer;
+        }
+
+        .show-desktop-bar:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Glassmorphic Panel templates */
+        .win11-panel {
+            position: absolute;
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(35px) saturate(140%);
+            -webkit-backdrop-filter: blur(35px) saturate(140%);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--panel-radius);
+            box-shadow: var(--shadow-main);
+            z-index: 999;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s cubic-bezier(0.1, 0.9, 0.2, 1), transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        .win11-panel.hidden {
+            opacity: 0;
+            transform: translateY(120px) scale(0.97);
+            pointer-events: none;
+        }
+
+        /* Start Menu specific */
+        #start-menu {
+            bottom: 56px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 520px;
+            height: 600px;
+            padding: 24px;
+        }
+
+        #start-menu.hidden {
+            transform: translate(-50%, 100px) scale(0.97);
+        }
+
+        .start-search {
+            position: relative;
+            width: 100%;
+            height: 36px;
+            margin-bottom: 24px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            opacity: 0.7;
+            color: var(--text-main);
+        }
+
+        .start-search input {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            border: 1px solid var(--border-panel);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0 15px 0 38px;
+            font-size: 13px;
+            color: var(--text-light);
+            outline: none;
+            border-bottom: 2px solid var(--accent-color);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .dark-theme .start-search input {
+            background-color: rgba(45, 45, 45, 0.9);
+            color: var(--text-dark);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .start-pinned, .start-recommended {
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .start-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .start-btn {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: inherit;
+            color: var(--text-main);
+        }
+
+        .dark-theme .start-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .start-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .pinned-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-gap: 12px;
+        }
+
+        .pinned-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .pinned-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .dark-theme .pinned-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .pinned-item img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+        }
+
+        .pinned-item span {
+            font-size: 11px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .recommended-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 12px;
+        }
+
+        .recommended-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+        }
+
+        .recommended-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-theme .recommended-item:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .doc-icon {
+            font-size: 20px;
+            color: var(--accent-color);
+            margin-right: 12px;
+        }
+
+        .doc-icon-excel {
+            font-size: 20px;
+            color: #107c41;
+            margin-right: 12px;
+        }
+
+        .rec-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .rec-title {
+            font-size: 12px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .rec-desc {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        .start-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-top: 1px solid var(--border-panel);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dark-theme .start-footer {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .profile-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .power-menu-container {
+            position: relative;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            outline: none;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--btn-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition-fast);
+        }
+
+        .icon-btn:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-theme .icon-btn:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .power-dropdown {
+            position: absolute;
+            bottom: 40px;
+            right: 0;
+            width: 170px;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--panel-radius);
+            padding: 6px;
+            box-shadow: var(--shadow-main);
+            z-index: 1000;
+        }
+
+        .power-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .power-option:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-theme .power-option:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Quick Settings Panel */
+        #quick-settings {
+            bottom: 56px;
+            right: 12px;
+            width: 360px;
+            padding: 16px;
+        }
+
+        .qs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .qs-tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 84px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--panel-radius);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            padding: 8px;
+            text-align: center;
+        }
+
+        .dark-theme .qs-tile {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .qs-tile:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .dark-theme .qs-tile:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .qs-tile.active {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: 1px solid var(--accent-color);
+        }
+
+        .qs-tile.active:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .qs-tile-icon {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .qs-tile-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .qs-subtext {
+            font-size: 9px;
+            opacity: 0.8;
+        }
+
+        .qs-sliders {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-panel);
+            padding-bottom: 20px;
+        }
+
+        .qs-slider-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .slider-icon {
+            font-size: 13px;
+            color: var(--text-main);
+            width: 20px;
+        }
+
+        .qs-slider {
+            flex-grow: 1;
+            height: 4px;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+            background: rgba(128, 128, 128, 0.3);
+        }
+
+        .qs-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            cursor: pointer;
+            border: 2px solid #fff;
+            transition: var(--transition-fast);
+        }
+
+        .qs-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .qs-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .qs-battery {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .qs-footer-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Calendar & Notifications */
+        #calendar-panel {
+            bottom: 56px;
+            right: 12px;
+            width: 360px;
+            padding: 16px;
+            max-height: 580px;
+        }
+
+        .notifications-section {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .notif-clear-all {
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 11px;
+            color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .notif-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 24px 0;
+            opacity: 0.6;
+            font-size: 12px;
+        }
+
+        .calendar-divider {
+            border: none;
+            border-top: 1px solid var(--border-panel);
+            margin: 12px 0;
+        }
+
+        .calendar-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        #cal-month-year {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .cal-arrows {
+            display: flex;
+            gap: 4px;
+        }
+
+        .cal-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .cal-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            grid-row-gap: 6px;
+        }
+
+        .cal-day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
+            font-size: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border: 2px solid transparent;
+        }
+
+        .cal-day:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .cal-day.today {
+            background-color: var(--accent-color);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .cal-day.today:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .cal-day.other-month {
+            opacity: 0.35;
+        }
+
+        /* Widgets Panel styling */
+        #widgets-panel {
+            bottom: 56px;
+            left: 12px;
+            width: 420px;
+            height: calc(100% - 70px);
+            max-height: 800px;
+            padding: 24px;
+        }
+
+        #widgets-panel.hidden {
+            transform: translateX(-120%) scale(0.97);
+        }
+
+        .widgets-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .widgets-search {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .widgets-search input {
+            width: 100%;
+            height: 34px;
+            border-radius: 6px;
+            border: 1px solid var(--border-panel);
+            background-color: rgba(255, 255, 255, 0.4);
+            padding: 0 12px 0 34px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .dark-theme .widgets-search input {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+
+        .widgets-search i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.6;
+        }
+
+        .widgets-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .widget-card {
+            background-color: rgba(255, 255, 255, 0.35);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--panel-radius);
+            padding: 16px;
+        }
+
+        .dark-theme .widget-card {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .widget-title {
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .weather-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .weather-icon {
+            font-size: 32px;
+            color: #ffb900;
+        }
+
+        .temp-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .temp {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .weather-city {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .weather-forecast {
+            font-size: 11px;
+            margin-top: 6px;
+            opacity: 0.7;
+        }
+
+        .stock-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .stock-val.positive {
+            color: #107c41;
+            font-weight: 600;
+        }
+
+        /* Global Floating Search Panel */
+        #search-panel {
+            bottom: 56px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 480px;
+            padding: 16px;
+        }
+
+        #search-panel.hidden {
+            transform: translate(-50%, 100px) scale(0.97);
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            height: 40px;
+            border-bottom: 2px solid var(--accent-color);
+            margin-bottom: 16px;
+        }
+
+        .search-header input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 15px;
+            color: var(--text-main);
+            padding: 0 10px 0 32px;
+        }
+
+        .search-header i {
+            position: absolute;
+            left: 8px;
+            font-size: 15px;
+            opacity: 0.7;
+        }
+
+        .search-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .search-quick-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .quick-link-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.25);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--btn-radius);
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .dark-theme .quick-link-item {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .quick-link-item:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .popular-apps-grid {
+            display: flex;
+            gap: 16px;
+        }
+
+        .popular-app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 72px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--btn-radius);
+        }
+
+        .popular-app-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .popular-app-item img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .popular-app-item span {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* WINDOW MANAGER */
+        .window {
+            position: absolute;
+            min-width: 320px;
+            min-height: 240px;
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(35px) saturate(130%);
+            -webkit-backdrop-filter: blur(35px) saturate(130%);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--window-radius);
+            box-shadow: var(--shadow-window);
+            z-index: 100;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            will-change: transform, width, height, opacity;
+            transform: scale(1) translate3d(0, 0, 0);
+            opacity: 1;
+        }
+
+        /* Animations */
+        .window.opening {
+            animation: window-open 0.3s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+        }
+
+        .window.closing {
+            animation: window-close 0.2s cubic-bezier(0.9, 0.1, 0.9, 0.2) forwards;
+        }
+
+        .window.minimizing {
+            animation: window-minimize 0.35s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+        }
+
+        .window.maximizing {
+            transition: var(--transition-smooth);
+        }
+
+        @keyframes window-open {
+            from {
+                transform: scale(0.85) translate3d(0, 80px, 0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translate3d(0, 0, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes window-close {
+            from {
+                transform: scale(1) translate3d(0, 0, 0);
+                opacity: 1;
+            }
+            to {
+                transform: scale(0.8) translate3d(0, 40px, 0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes window-minimize {
+            to {
+                transform: scale(0.3) translate3d(var(--min-x), var(--min-y), 0);
+                opacity: 0;
+            }
+        }
+
+        .window-titlebar {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid var(--border-panel);
+            padding: 0 12px;
+            cursor: move;
+        }
+
+        .window-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .window-title img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .window-controls {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .window-control {
+            width: 44px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .window-control:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .dark-theme .window-control:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .control-close:hover {
+            background-color: #e81123 !important;
+            color: #fff !important;
+        }
+
+        .control-max-container {
+            position: relative;
+        }
+
+        .snap-dropdown {
+            position: absolute;
+            top: 40px;
+            right: -20px;
+            width: 180px;
+            background-color: var(--bg-panel);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--panel-radius);
+            padding: 10px;
+            box-shadow: var(--shadow-main);
+            z-index: 10000;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 8px;
+        }
+
+        .snap-layout {
+            height: 50px;
+            border: 1px dashed var(--border-panel);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .snap-layout:hover {
+            border-color: var(--accent-color);
+        }
+
+        .snap-part {
+            background-color: rgba(128, 128, 128, 0.2);
+            border: 1px solid transparent;
+            transition: var(--transition-fast);
+        }
+
+        .snap-part:hover {
+            background-color: var(--accent-light);
+            border-color: var(--accent-color);
+        }
+
+        .window-content {
+            flex-grow: 1;
+            overflow: auto;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .dark-theme .window-content {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Resize borders */
+        .window-resize {
+            position: absolute;
+            background: transparent;
+            z-index: 10;
+        }
+
+        .resize-r { right: 0; top: 0; width: 6px; height: 100%; cursor: e-resize; }
+        .resize-l { left: 0; top: 0; width: 6px; height: 100%; cursor: w-resize; }
+        .resize-b { bottom: 0; left: 0; height: 6px; width: 100%; cursor: s-resize; }
+        .resize-t { top: 0; left: 0; height: 6px; width: 100%; cursor: n-resize; }
+        .resize-se { right: 0; bottom: 0; width: 10px; height: 10px; cursor: se-resize; }
+        .resize-sw { left: 0; bottom: 0; width: 10px; height: 10px; cursor: sw-resize; }
+
+        /* File Explorer styling */
+        .explorer-app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .explorer-toolbar {
+            height: 48px;
+            border-bottom: 1px solid var(--border-panel);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .explorer-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            font-size: 12px;
+            border: 1px solid transparent;
+        }
+
+        .explorer-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .explorer-btn i {
+            font-size: 14px;
+            color: var(--accent-color);
+        }
+
+        .explorer-body {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .explorer-sidebar {
+            width: 180px;
+            border-right: 1px solid var(--border-panel);
+            padding: 12px 6px;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            border-radius: var(--btn-radius);
+            font-size: 12.5px;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+        }
+
+        .sidebar-item i {
+            color: var(--accent-color);
+            width: 16px;
+        }
+
+        .explorer-main {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .explorer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            grid-gap: 16px;
+        }
+
+        .file-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid transparent;
+        }
+
+        .file-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .file-item i {
+            font-size: 32px;
+            color: #ffb900;
+            margin-bottom: 8px;
+        }
+
+        .file-item.doc-file i {
+            color: var(--accent-color);
+        }
+
+        .file-item span {
+            font-size: 11px;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Settings App styling */
+        .settings-app {
+            display: flex;
+            height: 100%;
+        }
+
+        .settings-sidebar {
+            width: 200px;
+            border-right: 1px solid var(--border-panel);
+            padding: 16px 8px;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .settings-sidebar-header {
+            font-size: 15px;
+            font-weight: 600;
+            padding: 0 12px 16px 12px;
+        }
+
+        .settings-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: var(--btn-radius);
+            font-size: 12.5px;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .settings-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .settings-menu-item.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .settings-main {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .settings-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .settings-card {
+            background-color: rgba(255, 255, 255, 0.25);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--panel-radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dark-theme .settings-card {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .settings-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .settings-card-title {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .settings-card-desc {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        /* Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(128, 128, 128, 0.5);
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Wallpaper gallery */
+        .wallpaper-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 12px;
+            margin-top: 12px;
+        }
+
+        .wp-thumb {
+            height: 80px;
+            border-radius: 6px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition-fast);
+        }
+
+        .wp-thumb:hover {
+            transform: scale(1.05);
+        }
+
+        .wp-thumb.active {
+            border-color: var(--accent-color);
+        }
+
+        /* Calculator App styling */
+        .calc-app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 12px;
+        }
+
+        .calc-display {
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .calc-history {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-bottom: 4px;
+        }
+
+        .calc-current {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .calc-keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 4px;
+            flex-grow: 1;
+        }
+
+        .calc-btn {
+            background-color: rgba(255, 255, 255, 0.35);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--btn-radius);
+            outline: none;
+            font-family: inherit;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            color: var(--text-main);
+        }
+
+        .dark-theme .calc-btn {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .calc-btn:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .dark-theme .calc-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .calc-btn.op-btn {
+            background-color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+
+        .dark-theme .calc-btn.op-btn {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .calc-btn.eq-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .calc-btn.eq-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Notepad App styling */
+        .notepad-app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .notepad-menu {
+            height: 28px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--border-panel);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 16px;
+            font-size: 11.5px;
+        }
+
+        .notepad-menu span {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: var(--btn-radius);
+        }
+
+        .notepad-menu span:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .notepad-textarea {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            background: transparent;
+            padding: 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: var(--text-main);
+        }
+
+        /* Edge Emulator styling */
+        .edge-app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: #fff;
+        }
+
+        .dark-theme .edge-app {
+            background-color: #1a1a1a;
+        }
+
+        .edge-nav {
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.04);
+            border-bottom: 1px solid var(--border-panel);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 8px;
+        }
+
+        .edge-nav-btn {
+            background: none;
+            border: none;
+            outline: none;
+            width: 28px;
+            height: 28px;
+            border-radius: var(--btn-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .edge-nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .edge-address-bar {
+            flex-grow: 1;
+            height: 28px;
+            border-radius: 14px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-panel);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+        }
+
+        .dark-theme .edge-address-bar {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+
+        .edge-address-bar i {
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        .edge-address-bar input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 12px;
+            color: var(--text-main);
+        }
+
+        .edge-viewport {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edge-home-mock {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .edge-home-mock img {
+            width: 120px;
+            margin-bottom: 24px;
+        }
+
+        .edge-search-box {
+            position: relative;
+            width: 460px;
+            height: 44px;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 22px;
+            border: 1px solid var(--border-panel);
+            background-color: #fff;
+        }
+
+        .dark-theme .edge-search-box {
+            background-color: #333;
+        }
+
+        .edge-search-box input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: none;
+            border-radius: 22px;
+            padding: 0 44px;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .edge-search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+
+        /* Store App styling */
+        .store-app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .store-header {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-panel);
+        }
+
+        .store-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .store-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .store-promo {
+            height: 160px;
+            border-radius: var(--panel-radius);
+            background: linear-gradient(135deg, #0078d4, #00bcf2);
+            color: #fff;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.2);
+        }
+
+        .store-promo h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .store-promo p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .store-grid-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-gap: 16px;
+        }
+
+        .store-card {
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--panel-radius);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .dark-theme .store-card {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .store-card:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .store-card img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+        }
+
+        .store-card-name {
+            font-size: 12.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .store-card-cat {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-bottom: 12px;
+        }
+
+        .store-card-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            outline: none;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Shutdown & BSOD overlays */
+        .screen-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100000;
+            background-color: #000;
+        }
+
+        .screen-overlay.hidden {
+            display: none;
+        }
+
+        .shutdown-screen, .restart-screen {
+            width: 100%;
+            height: 100%;
+            background-color: #004578;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            font-size: 18px;
+            font-weight: 300;
+        }
+
+        .shutdown-screen.hidden, .restart-screen.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .lock-screen {
+            width: 100%;
+            height: 100%;
+            background-image: url('wallpaper.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10%;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .lock-screen.hidden {
+            display: none;
+        }
+
+        .lock-time {
+            font-size: 72px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .lock-date {
+            font-size: 20px;
+            margin-top: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .lock-prompt {
+            margin-top: auto;
+            margin-bottom: 60px;
+            font-size: 13px;
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(128, 128, 128, 0.3);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(128, 128, 128, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <!-- Desktop Wallpaper Layer -->
+        <div id="wallpaper"></div>
+        
+        <!-- Desktop Grid Icons -->
+        <div class="desktop-icons">
+            <div class="desktop-icon" data-app="explorer" id="icon-explorer">
+                <div class="icon-wrapper">
+                    <img src="https://win11.blueedge.me/img/icon/explorer.png" alt="This PC" onerror="this.src='https://img.icons8.com/fluent/48/000000/folder-invoices.png'">
+                </div>
+                <span>Этот компьютер</span>
+            </div>
+            <div class="desktop-icon" data-app="edge" id="icon-edge">
+                <div class="icon-wrapper">
+                    <img src="https://win11.blueedge.me/img/icon/edge.png" alt="Edge" onerror="this.src='https://img.icons8.com/fluent/48/000000/ms-edge.png'">
+                </div>
+                <span>Microsoft Edge</span>
+            </div>
+            <div class="desktop-icon" data-app="store" id="icon-store">
+                <div class="icon-wrapper">
+                    <img src="https://win11.blueedge.me/img/icon/store.png" alt="Store" onerror="this.src='https://img.icons8.com/fluent/48/000000/microsoft-store.png'">
+                </div>
+                <span>Microsoft Store</span>
+            </div>
+            <div class="desktop-icon" data-app="settings" id="icon-settings">
+                <div class="icon-wrapper">
+                    <img src="https://win11.blueedge.me/img/icon/settings.png" alt="Settings" onerror="this.src='https://img.icons8.com/fluent/48/000000/settings.png'">
+                </div>
+                <span>Параметры</span>
+            </div>
+            <div class="desktop-icon" data-app="notepad" id="icon-notepad">
+                <div class="icon-wrapper">
+                    <img src="https://win11.blueedge.me/img/icon/notepad.png" alt="Notepad" onerror="this.src='https://img.icons8.com/fluent/48/000000/notepad.png'">
+                </div>
+                <span>Блокнот</span>
+            </div>
+            <div class="desktop-icon" data-app="calculator" id="icon-calculator">
+                <div class="icon-wrapper">
+                    <img src="https://win11.blueedge.me/img/icon/calculator.png" alt="Calculator" onerror="this.src='https://img.icons8.com/fluent/48/000000/calculator.png'">
+                </div>
+                <span>Калькулятор</span>
+            </div>
+        </div>
+
+        <!-- Windows Container for Active Windows -->
+        <div id="windows-container"></div>
+
+        <!-- Start Menu Panel -->
+        <div id="start-menu" class="win11-panel hidden">
+            <div class="start-search">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" placeholder="Поиск в Интернете, приложениях и документах..." id="start-search-input">
+            </div>
+            <div class="start-pinned">
+                <div class="start-section-header">
+                    <span>Закрепленные</span>
+                    <button class="start-btn">Все приложения <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="pinned-grid">
+                    <div class="pinned-item" data-app="edge">
+                        <img src="https://win11.blueedge.me/img/icon/edge.png" alt="Edge">
+                        <span>Edge</span>
+                    </div>
+                    <div class="pinned-item" data-app="explorer">
+                        <img src="https://win11.blueedge.me/img/icon/explorer.png" alt="Explorer">
+                        <span>Проводник</span>
+                    </div>
+                    <div class="pinned-item" data-app="store">
+                        <img src="https://win11.blueedge.me/img/icon/store.png" alt="Store">
+                        <span>Store</span>
+                    </div>
+                    <div class="pinned-item" data-app="settings">
+                        <img src="https://win11.blueedge.me/img/icon/settings.png" alt="Settings">
+                        <span>Параметры</span>
+                    </div>
+                    <div class="pinned-item" data-app="notepad">
+                        <img src="https://win11.blueedge.me/img/icon/notepad.png" alt="Notepad">
+                        <span>Блокнот</span>
+                    </div>
+                    <div class="pinned-item" data-app="calculator">
+                        <img src="https://win11.blueedge.me/img/icon/calculator.png" alt="Calculator">
+                        <span>Калькулятор</span>
+                    </div>
+                    <div class="pinned-item" data-app="word">
+                        <img src="https://win11.blueedge.me/img/icon/word.png" alt="Word" onerror="this.src='https://img.icons8.com/fluent/48/000000/microsoft-word-2019.png'">
+                        <span>Word</span>
+                    </div>
+                    <div class="pinned-item" data-app="excel">
+                        <img src="https://win11.blueedge.me/img/icon/excel.png" alt="Excel" onerror="this.src='https://img.icons8.com/fluent/48/000000/microsoft-excel-2019.png'">
+                        <span>Excel</span>
+                    </div>
+                    <div class="pinned-item" data-app="powerpoint">
+                        <img src="https://win11.blueedge.me/img/icon/powerpoint.png" alt="PowerPoint" onerror="this.src='https://img.icons8.com/fluent/48/000000/microsoft-powerpoint-2019.png'">
+                        <span>PowerPoint</span>
+                    </div>
+                    <div class="pinned-item" data-app="mail">
+                        <img src="https://win11.blueedge.me/img/icon/mail.png" alt="Mail" onerror="this.src='https://img.icons8.com/fluent/48/000000/gmail-new.png'">
+                        <span>Почта</span>
+                    </div>
+                    <div class="pinned-item" data-app="photos">
+                        <img src="https://win11.blueedge.me/img/icon/photos.png" alt="Photos" onerror="this.src='https://img.icons8.com/fluent/48/000000/pictures-folder.png'">
+                        <span>Фотографии</span>
+                    </div>
+                    <div class="pinned-item" data-app="spotify">
+                        <img src="https://win11.blueedge.me/img/icon/spotify.png" alt="Spotify" onerror="this.src='https://img.icons8.com/color/48/000000/spotify.png'">
+                        <span>Spotify</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="start-recommended">
+                <div class="start-section-header">
+                    <span>Рекомендуем</span>
+                    <button class="start-btn">Еще <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="recommended-grid">
+                    <div class="recommended-item" data-file="notepad-guide">
+                        <i class="fa-solid fa-file-lines doc-icon"></i>
+                        <div class="rec-info">
+                            <span class="rec-title">Руководство пользователя.txt</span>
+                            <span class="rec-desc">Недавно открыто</span>
+                        </div>
+                    </div>
+                    <div class="recommended-item" data-file="excel-finance">
+                        <i class="fa-solid fa-file-excel doc-icon-excel"></i>
+                        <div class="rec-info">
+                            <span class="rec-title">Финансовый план 2026.xlsx</span>
+                            <span class="rec-desc">2 ч. назад</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Footer Profile & Power -->
+            <div class="start-footer">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <span class="profile-name">User</span>
+                </div>
+                <div class="power-menu-container">
+                    <button id="power-btn" class="icon-btn">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                    <div id="power-dropdown" class="power-dropdown hidden">
+                        <div class="power-option" id="power-sleep">
+                            <i class="fa-solid fa-moon"></i>
+                            <span>Спящий режим</span>
+                        </div>
+                        <div class="power-option" id="power-restart">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Перезагрузка</span>
+                        </div>
+                        <div class="power-option" id="power-shutdown">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Завершение работы</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Settings Menu Panel (Action Center) -->
+        <div id="quick-settings" class="win11-panel hidden">
+            <div class="qs-grid">
+                <div class="qs-tile active" id="qs-wifi">
+                    <div class="qs-tile-icon"><i class="fa-solid fa-wifi"></i></div>
+                    <span class="qs-tile-label">Wi-Fi<br><small class="qs-subtext">Подключено</small></span>
+                </div>
+                <div class="qs-tile active" id="qs-bluetooth">
+                    <div class="qs-tile-icon"><i class="fa-solid fa-bluetooth"></i></div>
+                    <span class="qs-tile-label">Bluetooth<br><small class="qs-subtext">Вкл.</small></span>
+                </div>
+                <div class="qs-tile" id="qs-airplane">
+                    <div class="qs-tile-icon"><i class="fa-solid fa-plane"></i></div>
+                    <span class="qs-tile-label">В самолете<br><small class="qs-subtext">Выкл.</small></span>
+                </div>
+                <div class="qs-tile" id="qs-saver">
+                    <div class="qs-tile-icon"><i class="fa-solid fa-battery-three-quarters"></i></div>
+                    <span class="qs-tile-label">Экономия<br><small class="qs-subtext">Выкл.</small></span>
+                </div>
+                <div class="qs-tile" id="qs-nightlight">
+                    <div class="qs-tile-icon"><i class="fa-solid fa-eye"></i></div>
+                    <span class="qs-tile-label">Ночной свет<br><small class="qs-subtext">Выкл.</small></span>
+                </div>
+                <div class="qs-tile" id="qs-project">
+                    <div class="qs-tile-icon"><i class="fa-solid fa-display"></i></div>
+                    <span class="qs-tile-label">Проецировать<br><small class="qs-subtext">Расширить</small></span>
+                </div>
+            </div>
+            
+            <div class="qs-sliders">
+                <div class="qs-slider-group">
+                    <i class="fa-solid fa-sun slider-icon"></i>
+                    <input type="range" min="10" max="100" value="80" class="qs-slider" id="brightness-slider">
+                </div>
+                <div class="qs-slider-group">
+                    <i class="fa-solid fa-volume-high slider-icon" id="volume-icon"></i>
+                    <input type="range" min="0" max="100" value="70" class="qs-slider" id="volume-slider">
+                </div>
+            </div>
+
+            <div class="qs-footer">
+                <div class="qs-battery">
+                    <i class="fa-solid fa-battery-three-quarters"></i>
+                    <span>84%</span>
+                </div>
+                <div class="qs-footer-icons">
+                    <button class="icon-btn" id="qs-settings-btn"><i class="fa-solid fa-gear"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-pen"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar and Notifications Panel -->
+        <div id="calendar-panel" class="win11-panel hidden">
+            <div class="notifications-section">
+                <div class="notif-header">
+                    <span>Уведомления</span>
+                    <button class="notif-clear-all">Очистить все</button>
+                </div>
+                <div class="notif-body">
+                    <div class="notif-placeholder">
+                        <i class="fa-regular fa-bell"></i>
+                        <span>Новых уведомлений нет</span>
+                    </div>
+                </div>
+            </div>
+            <hr class="calendar-divider">
+            <div class="calendar-section">
+                <div class="cal-header">
+                    <span id="cal-month-year">Июль 2026</span>
+                    <div class="cal-arrows">
+                        <button class="icon-btn" id="cal-prev"><i class="fa-solid fa-chevron-up"></i></button>
+                        <button class="icon-btn" id="cal-next"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                </div>
+                <div class="cal-weekdays">
+                    <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+                </div>
+                <div class="cal-days" id="calendar-grid">
+                    <!-- Javascript will populate days here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Widgets Panel -->
+        <div id="widgets-panel" class="win11-panel hidden">
+            <div class="widgets-header">
+                <span>Виджеты</span>
+                <i class="fa-solid fa-gear"></i>
+            </div>
+            <div class="widgets-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Поиск в веб-виджетах">
+            </div>
+            <div class="widgets-grid">
+                <div class="widget-card weather-widget">
+                    <div class="widget-title">Погода</div>
+                    <div class="weather-info">
+                        <i class="fa-solid fa-cloud-sun weather-icon"></i>
+                        <div class="temp-group">
+                            <span class="temp">+24°C</span>
+                            <span class="weather-city">Москва</span>
+                        </div>
+                    </div>
+                    <div class="weather-forecast">Переменная облачность</div>
+                </div>
+                <div class="widget-card stock-widget">
+                    <div class="widget-title">Рынки</div>
+                    <div class="stock-item">
+                        <span>S&P 500</span>
+                        <span class="stock-val positive">5,420.15 (+0.45%)</span>
+                    </div>
+                    <div class="stock-item">
+                        <span>USD/RUB</span>
+                        <span class="stock-val positive">89.40 (+0.12%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Floating Panel -->
+        <div id="search-panel" class="win11-panel hidden">
+            <div class="search-header">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Искать приложения, файлы и документы..." id="global-search-input">
+            </div>
+            <div class="search-body">
+                <div class="search-section">
+                    <span class="section-title">Быстрый поиск</span>
+                    <div class="search-quick-links">
+                        <div class="quick-link-item"><i class="fa-solid fa-cloud-sun"></i> Погода</div>
+                        <div class="quick-link-item"><i class="fa-solid fa-newspaper"></i> Новости дня</div>
+                        <div class="quick-link-item"><i class="fa-solid fa-calculator"></i> Вычисления</div>
+                    </div>
+                </div>
+                <div class="search-section">
+                    <span class="section-title">Популярные приложения</span>
+                    <div class="popular-apps-grid">
+                        <div class="popular-app-item" data-app="edge">
+                            <img src="https://win11.blueedge.me/img/icon/edge.png" alt="Edge">
+                            <span>Edge</span>
+                        </div>
+                        <div class="popular-app-item" data-app="settings">
+                            <img src="https://win11.blueedge.me/img/icon/settings.png" alt="Settings">
+                            <span>Параметры</span>
+                        </div>
+                        <div class="popular-app-item" data-app="explorer">
+                            <img src="https://win11.blueedge.me/img/icon/explorer.png" alt="Explorer">
+                            <span>Проводник</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Taskbar at the bottom -->
+    <div id="taskbar">
+        <!-- Widgets Icon (Left Align) -->
+        <div class="taskbar-left">
+            <div class="taskbar-icon-container" id="tb-widgets">
+                <img src="https://win11.blueedge.me/img/icon/widget.png" alt="Widgets" class="tb-icon" onerror="this.src='https://img.icons8.com/fluent/48/000000/microsoft-photos.png'">
+            </div>
+        </div>
+
+        <!-- System Apps Icons (Centered) -->
+        <div class="taskbar-center">
+            <div class="taskbar-icon-container" id="tb-start">
+                <img src="https://win11.blueedge.me/img/icon/start.png" alt="Start" class="tb-icon">
+            </div>
+            <div class="taskbar-icon-container" id="tb-search">
+                <img src="https://win11.blueedge.me/img/icon/search.png" alt="Search" class="tb-icon">
+            </div>
+            <div class="taskbar-icon-container" id="tb-explorer" data-app="explorer">
+                <img src="https://win11.blueedge.me/img/icon/explorer.png" alt="Explorer" class="tb-icon">
+                <div class="indicator"></div>
+            </div>
+            <div class="taskbar-icon-container" id="tb-edge" data-app="edge">
+                <img src="https://win11.blueedge.me/img/icon/edge.png" alt="Edge" class="tb-icon">
+                <div class="indicator"></div>
+            </div>
+            <div class="taskbar-icon-container" id="tb-store" data-app="store">
+                <img src="https://win11.blueedge.me/img/icon/store.png" alt="Store" class="tb-icon">
+                <div class="indicator"></div>
+            </div>
+            <div class="taskbar-icon-container" id="tb-notepad" data-app="notepad">
+                <img src="https://win11.blueedge.me/img/icon/notepad.png" alt="Notepad" class="tb-icon">
+                <div class="indicator"></div>
+            </div>
+            <div class="taskbar-icon-container" id="tb-calculator" data-app="calculator">
+                <img src="https://win11.blueedge.me/img/icon/calculator.png" alt="Calculator" class="tb-icon">
+                <div class="indicator"></div>
+            </div>
+            <div class="taskbar-icon-container" id="tb-settings" data-app="settings">
+                <img src="https://win11.blueedge.me/img/icon/settings.png" alt="Settings" class="tb-icon">
+                <div class="indicator"></div>
+            </div>
+        </div>
+
+        <!-- System Icons Tray & Clock (Right Align) -->
+        <div class="taskbar-right">
+            <!-- Hidden Icons Arrow -->
+            <div class="taskbar-icon-tray-btn" id="tb-arrow">
+                <i class="fa-solid fa-chevron-up"></i>
+            </div>
+            <!-- Quick Settings Group (Wifi, Volume, Battery) -->
+            <div class="taskbar-system-group" id="tb-quick-settings">
+                <i class="fa-solid fa-wifi tray-icon"></i>
+                <i class="fa-solid fa-volume-high tray-icon" id="tb-volume-icon"></i>
+                <i class="fa-solid fa-battery-three-quarters tray-icon"></i>
+            </div>
+            <!-- Language Select -->
+            <div class="taskbar-lang" id="tb-lang">
+                <span>РУС</span>
+            </div>
+            <!-- Clock/Calendar -->
+            <div class="taskbar-clock-container" id="tb-clock-date">
+                <span class="clock-time">12:00</span>
+                <span class="clock-date">12.07.2026</span>
+            </div>
+            <!-- Show Desktop Bar -->
+            <div class="show-desktop-bar" id="tb-show-desktop"></div>
+        </div>
+    </div>
+
+    <!-- Power Off / Blue Screen of Death Mock overlays for interaction -->
+    <div id="screen-overlay" class="screen-overlay hidden">
+        <div class="shutdown-screen hidden" id="shutdown-screen">
+            <div class="spinner"></div>
+            <span>Завершение работы...</span>
+        </div>
+        <div class="restart-screen hidden" id="restart-screen">
+            <div class="spinner"></div>
+            <span>Перезагрузка...</span>
+        </div>
+        <div class="lock-screen hidden" id="lock-screen">
+            <div class="lock-time" id="lock-time">12:00</div>
+            <div class="lock-date" id="lock-date">Воскресенье, 12 июля</div>
+            <div class="lock-prompt">Нажмите любую клавишу для входа</div>
+        </div>
+    </div>
+
+    <!-- JS SCRIPTS BUNDLE -->
+    <script>
+        /**
+         * Part 1: Apps templates and logic
+         */
+        window.AppTemplates = {
+            // 1. File Explorer
+            explorer: {
+                title: "Этот компьютер",
+                icon: "https://win11.blueedge.me/img/icon/explorer.png",
+                width: 720,
+                height: 480,
+                getHTML: function() {
+                    return `
+                    <div class="explorer-app">
+                        <div class="explorer-toolbar">
+                            <div class="explorer-btn" onclick="alert('Новая папка создана! (Эмуляция)')">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Создать</span>
+                            </div>
+                            <div class="explorer-btn" onclick="window.refreshExplorer()">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span>Обновить</span>
+                            </div>
+                        </div>
+                        <div class="explorer-body">
+                            <div class="explorer-sidebar">
+                                <div class="sidebar-item active" onclick="window.switchExplorerFolder('quick')">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span>Быстрый доступ</span>
+                                </div>
+                                <div class="sidebar-item" onclick="window.switchExplorerFolder('desktop')">
+                                    <i class="fa-solid fa-desktop"></i>
+                                    <span>Рабочий стол</span>
+                                </div>
+                                <div class="sidebar-item" onclick="window.switchExplorerFolder('documents')">
+                                    <i class="fa-solid fa-file"></i>
+                                    <span>Документы</span>
+                                </div>
+                                <div class="sidebar-item" onclick="window.switchExplorerFolder('downloads')">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Загрузки</span>
+                                </div>
+                            </div>
+                            <div class="explorer-main">
+                                <div class="explorer-grid" id="explorer-files-grid">
+                                    <!-- Populated dynamically by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                },
+                init: function(winEl) {
+                    window.virtualFS = {
+                        quick: [
+                            { name: "Документы", icon: "fa-folder", type: "folder", target: "documents" },
+                            { name: "Загрузки", icon: "fa-folder", type: "folder", target: "downloads" },
+                            { name: "Руководство.txt", icon: "fa-file-lines", type: "doc", target: "guide" }
+                        ],
+                        desktop: [
+                            { name: "Этот компьютер", icon: "fa-computer", type: "system" },
+                            { name: "Корзина", icon: "fa-trash", type: "system" }
+                        ],
+                        documents: [
+                            { name: "Финансы 2026.xlsx", icon: "fa-file-excel", type: "doc", content: "Excel Sheet mock" },
+                            { name: "Заметки.txt", icon: "fa-file-lines", type: "textfile", content: "Привет! Это веб-клон Windows 11 на чистом HTML, CSS и JS с плавными анимациями." }
+                        ],
+                        downloads: [
+                            { name: "chrome_installer.exe", icon: "fa-box-archive", type: "exec" }
+                        ]
+                    };
+
+                    window.switchExplorerFolder = function(folderKey) {
+                        const grid = winEl.querySelector('#explorer-files-grid');
+                        if (!grid) return;
+                        
+                        winEl.querySelectorAll('.sidebar-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        
+                        const files = window.virtualFS[folderKey] || [];
+                        grid.innerHTML = '';
+                        
+                        files.forEach(file => {
+                            const item = document.createElement('div');
+                            item.className = 'file-item';
+                            if (file.type === 'textfile' || file.type === 'doc') {
+                                item.classList.add('doc-file');
+                            }
+                            
+                            let iconClass = file.icon;
+                            if (file.type === 'folder') iconClass = 'fa-folder';
+                            
+                            item.innerHTML = `
+                                <i class="fa-solid ${iconClass}"></i>
+                                <span>${file.name}</span>
+                            `;
+                            
+                            item.addEventListener('dblclick', () => {
+                                if (file.type === 'folder') {
+                                    window.switchExplorerFolder(file.target);
+                                } else if (file.type === 'textfile') {
+                                    window.openApp('notepad', file.content);
+                                } else {
+                                    alert(`Запуск файла: ${file.name}`);
+                                }
+                            });
+                            grid.appendChild(item);
+                        });
+                    };
+
+                    window.refreshExplorer = function() {
+                        window.switchExplorerFolder('quick');
+                    };
+
+                    window.switchExplorerFolder('quick');
+                }
+            },
+
+            // 2. Settings
+            settings: {
+                title: "Параметры",
+                icon: "https://win11.blueedge.me/img/icon/settings.png",
+                width: 760,
+                height: 520,
+                getHTML: function() {
+                    return `
+                    <div class="settings-app">
+                        <div class="settings-sidebar">
+                            <div class="settings-sidebar-header">Параметры</div>
+                            <div class="settings-menu-item active" data-section="system">
+                                <i class="fa-solid fa-laptop"></i>
+                                <span>Система</span>
+                            </div>
+                            <div class="settings-menu-item" data-section="personalization">
+                                <i class="fa-solid fa-palette"></i>
+                                <span>Персонализация</span>
+                            </div>
+                            <div class="settings-menu-item" data-section="about">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>О системе</span>
+                            </div>
+                        </div>
+                        <div class="settings-main" id="settings-content">
+                            <!-- Populated dynamically by section click -->
+                        </div>
+                    </div>
+                    `;
+                },
+                init: function(winEl) {
+                    const content = winEl.querySelector('#settings-content');
+                    const menuItems = winEl.querySelectorAll('.settings-menu-item');
+                    
+                    const wallPapers = [
+                        'wallpaper.jpg',
+                        'https://win11.blueedge.me/img/wallpaper/default.jpg',
+                        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80',
+                        'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=1200&q=80',
+                        'https://images.unsplash.com/photo-1618005198143-e528346d9a59?w=1200&q=80'
+                    ];
+
+                    const sections = {
+                        system: `
+                            <div class="settings-section-title">Система</div>
+                            <div class="settings-card">
+                                <div class="settings-card-info">
+                                    <span class="settings-card-title">Режим экономии заряда</span>
+                                    <span class="settings-card-desc">Продлевает время автономной работы</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="battery-saver-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-card">
+                                <div class="settings-card-info">
+                                    <span class="settings-card-title">Супер плавные анимации</span>
+                                    <span class="settings-card-desc">Использовать плавный физический рендеринг переходов</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="animations-toggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        `,
+                        personalization: `
+                            <div class="settings-section-title">Персонализация</div>
+                            <div class="settings-card">
+                                <div class="settings-card-info">
+                                    <span class="settings-card-title">Темная тема</span>
+                                    <span class="settings-card-desc">Включение темного оформления Windows</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="dark-theme-toggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-section-title" style="font-size: 14px; margin-top: 24px;">Выберите обои рабочего стола</div>
+                            <div class="wallpaper-gallery">
+                                ${wallPapers.map((url, i) => `
+                                    <div class="wp-thumb ${i === 0 ? 'active' : ''}" style="background-image: url('${url}')" onclick="window.changeSystemWallpaper('${url}', this)"></div>
+                                `).join('')}
+                            </div>
+                        `,
+                        about: `
+                            <div class="settings-section-title">О системе</div>
+                            <div class="settings-card" style="flex-direction: column; align-items: flex-start; gap: 12px;">
+                                <div><strong>Windows 11 Web Clone (Monolith)</strong></div>
+                                <div>Версия: 26H2 (Сборка 2026.07)</div>
+                                <div>Разработано с использованием: HTML5, CSS3 Variables, Fluid Animations, Backdrop Acrylic Blur.</div>
+                                <div style="font-size:11px; opacity:0.7">Этот интерфейс разработан в демонстрационных целях для показа возможностей современного Fluent Design и CSS-трансформаций.</div>
+                            </div>
+                        `
+                    };
+
+                    function loadSection(sectionName) {
+                        content.innerHTML = sections[sectionName];
+                        
+                        if (sectionName === 'personalization') {
+                            const themeToggle = content.querySelector('#dark-theme-toggle');
+                            themeToggle.checked = document.body.classList.contains('dark-theme');
+                            themeToggle.addEventListener('change', (e) => {
+                                if (e.target.checked) {
+                                    document.body.classList.add('dark-theme');
+                                    document.querySelector('#qs-settings-btn')?.closest('#quick-settings')?.classList.add('dark-theme');
+                                } else {
+                                    document.body.classList.remove('dark-theme');
+                                }
+                            });
+                        }
+                        
+                        if (sectionName === 'system') {
+                            const animToggle = content.querySelector('#animations-toggle');
+                            animToggle.addEventListener('change', (e) => {
+                                if (e.target.checked) {
+                                    document.documentElement.style.setProperty('--transition-smooth', 'all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1)');
+                                } else {
+                                    document.documentElement.style.setProperty('--transition-smooth', 'none');
+                                }
+                            });
+                        }
+                    }
+
+                    window.changeSystemWallpaper = function(url, thumbEl) {
+                        document.getElementById('wallpaper').style.backgroundImage = `url('${url}')`;
+                        const lockScreen = document.getElementById('lock-screen');
+                        if (lockScreen) {
+                            lockScreen.style.backgroundImage = `url('${url}')`;
+                        }
+                        winEl.querySelectorAll('.wp-thumb').forEach(thumb => {
+                            thumb.classList.remove('active');
+                        });
+                        thumbEl.classList.add('active');
+                    };
+
+                    menuItems.forEach(item => {
+                        item.addEventListener('click', () => {
+                            menuItems.forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                            loadSection(item.dataset.section);
+                        });
+                    });
+
+                    loadSection('system');
+                }
+            },
+
+            // 3. Calculator
+            calculator: {
+                title: "Калькулятор",
+                icon: "https://win11.blueedge.me/img/icon/calculator.png",
+                width: 320,
+                height: 440,
+                getHTML: function() {
+                    return `
+                    <div class="calc-app">
+                        <div class="calc-display">
+                            <span class="calc-history" id="calc-hist"></span>
+                            <span class="calc-current" id="calc-curr">0</span>
+                        </div>
+                        <div class="calc-keys">
+                            <button class="calc-btn op-btn" onclick="window.pressCalc('C')">C</button>
+                            <button class="calc-btn op-btn" onclick="window.pressCalc('CE')">CE</button>
+                            <button class="calc-btn op-btn" onclick="window.pressCalc('/')">/</button>
+                            <button class="calc-btn op-btn" onclick="window.pressCalc('*')">×</button>
+                            
+                            <button class="calc-btn" onclick="window.pressCalc('7')">7</button>
+                            <button class="calc-btn" onclick="window.pressCalc('8')">8</button>
+                            <button class="calc-btn" onclick="window.pressCalc('9')">9</button>
+                            <button class="calc-btn op-btn" onclick="window.pressCalc('-')">-</button>
+                            
+                            <button class="calc-btn" onclick="window.pressCalc('4')">4</button>
+                            <button class="calc-btn" onclick="window.pressCalc('5')">5</button>
+                            <button class="calc-btn" onclick="window.pressCalc('6')">6</button>
+                            <button class="calc-btn op-btn" onclick="window.pressCalc('+')">+</button>
+                            
+                            <button class="calc-btn" onclick="window.pressCalc('1')">1</button>
+                            <button class="calc-btn" onclick="window.pressCalc('2')">2</button>
+                            <button class="calc-btn" onclick="window.pressCalc('3')">3</button>
+                            <button class="calc-btn eq-btn" style="grid-row: span 2; height: 100%" onclick="window.pressCalc('=')">=</button>
+                            
+                            <button class="calc-btn" style="grid-column: span 2;" onclick="window.pressCalc('0')">0</button>
+                            <button class="calc-btn" onclick="window.pressCalc('.')">.</button>
+                        </div>
+                    </div>
+                    `;
+                },
+                init: function(winEl) {
+                    let current = '0';
+                    let history = '';
+                    let shouldReset = false;
+
+                    const currEl = winEl.querySelector('#calc-curr');
+                    const histEl = winEl.querySelector('#calc-hist');
+
+                    window.pressCalc = function(key) {
+                        if (key >= '0' && key <= '9' || key === '.') {
+                            if (current === '0' || shouldReset) {
+                                current = key;
+                                shouldReset = false;
+                            } else {
+                                current += key;
+                            }
+                        } else if (key === 'C') {
+                            current = '0';
+                            history = '';
+                        } else if (key === 'CE') {
+                            current = '0';
+                        } else if (['+', '-', '*', '/'].includes(key)) {
+                            history = current + ' ' + key;
+                            shouldReset = true;
+                        } else if (key === '=') {
+                            if (!history) return;
+                            try {
+                                const expression = history + ' ' + current;
+                                const result = eval(expression.replace(/×/g, '*'));
+                                currEl.innerText = Number(result.toFixed(8));
+                                current = String(result);
+                                history = '';
+                                shouldReset = true;
+                                return;
+                            } catch (e) {
+                                currEl.innerText = 'Ошибка';
+                            }
+                        }
+                        
+                        currEl.innerText = current;
+                        histEl.innerText = history;
+                    };
+                }
+            },
+
+            // 4. Notepad
+            notepad: {
+                title: "Блокнот",
+                icon: "https://win11.blueedge.me/img/icon/notepad.png",
+                width: 600,
+                height: 400,
+                getHTML: function() {
+                    return `
+                    <div class="notepad-app">
+                        <div class="notepad-menu">
+                            <span onclick="window.notepadNew()">Файл</span>
+                            <span onclick="window.notepadClear()">Очистить</span>
+                            <span onclick="window.notepadSave()">Сохранить</span>
+                        </div>
+                        <textarea class="notepad-textarea" id="notepad-text" placeholder="Введите текст..."></textarea>
+                    </div>
+                    `;
+                },
+                init: function(winEl, initialContent) {
+                    const textarea = winEl.querySelector('#notepad-text');
+                    if (initialContent && textarea) {
+                        textarea.value = initialContent;
+                    }
+
+                    window.notepadNew = function() {
+                        if (textarea.value && confirm("Очистить блокнот?")) {
+                            textarea.value = '';
+                        }
+                    };
+
+                    window.notepadClear = function() {
+                        textarea.value = '';
+                    };
+
+                    window.notepadSave = function() {
+                        const text = textarea.value;
+                        const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+                        const a = document.createElement("a");
+                        a.href = URL.createObjectURL(blob);
+                        a.download = "Заметка.txt";
+                        a.click();
+                    };
+                }
+            },
+
+            // 5. Microsoft Edge
+            edge: {
+                title: "Microsoft Edge",
+                icon: "https://win11.blueedge.me/img/icon/edge.png",
+                width: 800,
+                height: 540,
+                getHTML: function() {
+                    return `
+                    <div class="edge-app">
+                        <div class="edge-nav">
+                            <button class="edge-nav-btn" onclick="window.goEdgeHome()"><i class="fa-solid fa-house"></i></button>
+                            <button class="edge-nav-btn" onclick="window.refreshEdge()"><i class="fa-solid fa-rotate-right"></i></button>
+                            <div class="edge-address-bar">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="text" value="https://bing.com" id="edge-url-input">
+                            </div>
+                        </div>
+                        <div class="edge-viewport" id="edge-viewport-content">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    `;
+                },
+                init: function(winEl) {
+                    const viewport = winEl.querySelector('#edge-viewport-content');
+                    const urlInput = winEl.querySelector('#edge-url-input');
+
+                    window.goEdgeHome = function() {
+                        urlInput.value = "https://bing.com";
+                        viewport.innerHTML = `
+                            <div class="edge-home-mock">
+                                <img src="https://win11.blueedge.me/img/icon/edge.png" alt="Edge">
+                                <div class="edge-search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" placeholder="Поиск в Интернете..." id="edge-search-input">
+                                </div>
+                                <p style="font-size: 11px; margin-top: 20px; opacity:0.6; color: var(--text-secondary)">Популярные запросы: Windows 11 Web Clone, GitHub, Unsplash</p>
+                            </div>
+                        `;
+
+                        const searchInput = viewport.querySelector('#edge-search-input');
+                        if (searchInput) {
+                            searchInput.addEventListener('keypress', (e) => {
+                                if (e.key === 'Enter') {
+                                    window.searchEdge(searchInput.value);
+                                }
+                            });
+                        }
+                    };
+
+                    window.searchEdge = function(query) {
+                        if (!query) return;
+                        urlInput.value = "https://bing.com/search?q=" + encodeURIComponent(query);
+                        viewport.style.backgroundColor = document.body.classList.contains('dark-theme') ? '#1e1e1e' : '#f5f5f5';
+                        viewport.innerHTML = `
+                            <div style="padding: 24px; width: 100%; color: var(--text-main); font-family: sans-serif;">
+                                <h3 style="margin-bottom: 16px; color: var(--accent-color);">Bing - Результаты для: "${query}"</h3>
+                                <div style="background-color: var(--bg-panel); border: 1px solid var(--border-panel); padding: 16px; border-radius: 8px; margin-bottom: 12px; cursor: pointer;" onclick="alert('Привет из монолита!')">
+                                    <h4 style="color:#0078d4; margin-bottom:4px;">Windows 11 Web Clone - Монолитная сборка</h4>
+                                    <p style="font-size:12.5px; opacity:0.8;">Вся верстка, стили и скрипты собраны в один гигантский файл для упрощения запуска.</p>
+                                </div>
+                                <div style="background-color: var(--bg-panel); border: 1px solid var(--border-panel); padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                                    <h4 style="color:#0078d4; margin-bottom:4px;">Glassmorphism & Transparency</h4>
+                                    <p style="font-size:12.5px; opacity:0.8;">Достигается за счет использования CSS backdrop-filter: blur() и RGB-прозрачных фонов.</p>
+                                </div>
+                            </div>
+                        `;
+                    };
+
+                    window.refreshEdge = function() {
+                        window.goEdgeHome();
+                    };
+
+                    window.goEdgeHome();
+                }
+            },
+
+            // 6. Microsoft Store
+            store: {
+                title: "Microsoft Store",
+                icon: "https://win11.blueedge.me/img/icon/store.png",
+                width: 780,
+                height: 520,
+                getHTML: function() {
+                    return `
+                    <div class="store-app">
+                        <div class="store-header">
+                            <span class="store-title">Microsoft Store</span>
+                            <i class="fa-solid fa-magnifying-glass" style="opacity:0.6; cursor:pointer"></i>
+                        </div>
+                        <div class="store-body">
+                            <div class="store-promo">
+                                <h2>Встречайте Windows Copilot</h2>
+                                <p>Интеллектуальный помощник уже доступен для вашего веб-интерфейса.</p>
+                            </div>
+                            <div class="store-grid-title">Популярные приложения</div>
+                            <div class="store-grid">
+                                <div class="store-card">
+                                    <img src="https://img.icons8.com/color/48/000000/spotify.png" alt="Spotify">
+                                    <span class="store-card-name">Spotify</span>
+                                    <span class="store-card-cat">Музыка</span>
+                                    <button class="store-card-btn" onclick="window.installApp('Spotify', 'spotify', 'https://img.icons8.com/color/48/000000/spotify.png', this)">Установить</button>
+                                </div>
+                                <div class="store-card">
+                                    <img src="https://img.icons8.com/color/48/000000/telegram-app.png" alt="Telegram">
+                                    <span class="store-card-name">Telegram</span>
+                                    <span class="store-card-cat">Общение</span>
+                                    <button class="store-card-btn" onclick="window.installApp('Telegram', 'telegram', 'https://img.icons8.com/color/48/000000/telegram-app.png', this)">Установить</button>
+                                </div>
+                                <div class="store-card">
+                                    <img src="https://img.icons8.com/fluent/48/000000/visual-studio-code-2019.png" alt="VS Code">
+                                    <span class="store-card-name">VS Code</span>
+                                    <span class="store-card-cat">Разработка</span>
+                                    <button class="store-card-btn" onclick="window.installApp('VS Code', 'vscode', 'https://img.icons8.com/fluent/48/000000/visual-studio-code-2019.png', this)">Установить</button>
+                                </div>
+                                <div class="store-card">
+                                    <img src="https://img.icons8.com/color/48/000000/discord-new-logo.png" alt="Discord">
+                                    <span class="store-card-name">Discord</span>
+                                    <span class="store-card-cat">Игры и голос</span>
+                                    <button class="store-card-btn" onclick="window.installApp('Discord', 'discord', 'https://img.icons8.com/color/48/000000/discord-new-logo.png', this)">Установить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                },
+                init: function(winEl) {
+                    window.installApp = function(appName, appId, iconUrl, buttonEl) {
+                        if (buttonEl.innerText === "Установлено") {
+                            alert(`${appName} уже установлено!`);
+                            return;
+                        }
+                        
+                        buttonEl.innerText = "Установка...";
+                        buttonEl.disabled = true;
+                        buttonEl.style.backgroundColor = "gray";
+
+                        setTimeout(() => {
+                            buttonEl.innerText = "Установлено";
+                            buttonEl.style.backgroundColor = "#107c41";
+                            
+                            const desktopIcons = document.querySelector('.desktop-icons');
+                            if (desktopIcons) {
+                                const newIcon = document.createElement('div');
+                                newIcon.className = 'desktop-icon';
+                                newIcon.dataset.app = appId;
+                                newIcon.id = `icon-${appId}`;
+                                newIcon.innerHTML = `
+                                    <div class="icon-wrapper">
+                                        <img src="${iconUrl}" alt="${appName}">
+                                    </div>
+                                    <span>${appName}</span>
+                                `;
+                                
+                                newIcon.addEventListener('dblclick', () => {
+                                    window.openApp(appId);
+                                });
+                                desktopIcons.appendChild(newIcon);
+                            }
+
+                            window.AppTemplates[appId] = {
+                                title: appName,
+                                icon: iconUrl,
+                                width: 700,
+                                height: 460,
+                                getHTML: function() {
+                                    return `
+                                        <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; color: var(--text-main); font-family:sans-serif; text-align:center; padding: 24px;">
+                                            <img src="${iconUrl}" style="width:64px; margin-bottom:20px;">
+                                            <h2>Добро пожаловать в ${appName}</h2>
+                                            <p style="margin-top:10px; opacity:0.8;">Приложение установлено динамически из Microsoft Store.</p>
+                                        </div>
+                                    `;
+                                },
+                                init: function() {}
+                            };
+
+                            const taskbarCenter = document.querySelector('.taskbar-center');
+                            if (taskbarCenter) {
+                                const newTbIcon = document.createElement('div');
+                                newTbIcon.className = 'taskbar-icon-container';
+                                newTbIcon.id = `tb-${appId}`;
+                                newTbIcon.dataset.app = appId;
+                                newTbIcon.innerHTML = `
+                                    <img src="${iconUrl}" alt="${appName}" class="tb-icon">
+                                    <div class="indicator"></div>
+                                `;
+                                newTbIcon.addEventListener('click', () => {
+                                    window.toggleOrOpenApp(appId);
+                                });
+                                taskbarCenter.appendChild(newTbIcon);
+                            }
+                            
+                            alert(`Приложение ${appName} установлено! Иконка добавлена на рабочий стол.`);
+                        }, 2000);
+                    };
+                }
+            }
+        };
+
+
+        /**
+         * Part 2: Core Shell UI & Window Manager
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = {
+                zStack: [],
+                openWindows: {},
+                topZ: 100,
+                activeApp: null,
+                soundMuted: false
+            };
+
+            const desktop = document.getElementById('desktop');
+            const windowsContainer = document.getElementById('windows-container');
+            const startMenu = document.getElementById('start-menu');
+            const quickSettings = document.getElementById('quick-settings');
+            const calendarPanel = document.getElementById('calendar-panel');
+            const widgetsPanel = document.getElementById('widgets-panel');
+            const searchPanel = document.getElementById('search-panel');
+            
+            const screenOverlay = document.getElementById('screen-overlay');
+            const shutdownScreen = document.getElementById('shutdown-screen');
+            const restartScreen = document.getElementById('restart-screen');
+            const lockScreen = document.getElementById('lock-screen');
+            
+            const clockTime = document.querySelector('.clock-time');
+            const clockDate = document.querySelector('.clock-date');
+
+            /* CLOCK & CALENDAR */
+            function updateClock() {
+                const now = new Date();
+                const hrs = String(now.getHours()).padStart(2, '0');
+                const mins = String(now.getMinutes()).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = now.getFullYear();
+
+                if (clockTime) clockTime.innerText = `${hrs}:${mins}`;
+                if (clockDate) clockDate.innerText = `${day}.${month}.${year}`;
+
+                const lockTimeEl = document.getElementById('lock-time');
+                const lockDateEl = document.getElementById('lock-date');
+                if (lockTimeEl) lockTimeEl.innerText = `${hrs}:${mins}`;
+                if (lockDateEl) {
+                    const options = { weekday: 'long', month: 'long', day: 'numeric' };
+                    lockDateEl.innerText = now.toLocaleDateString('ru-RU', options);
+                }
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            let currentCalDate = new Date();
+            function renderCalendar(date) {
+                const grid = document.getElementById('calendar-grid');
+                const title = document.getElementById('cal-month-year');
+                if (!grid || !title) return;
+
+                grid.innerHTML = '';
+                const month = date.getMonth();
+                const year = date.getFullYear();
+
+                const monthNames = [
+                    "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+                    "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+                ];
+                title.innerText = `${monthNames[month]} ${year}`;
+
+                const firstDayIndex = new Date(year, month, 1).getDay();
+                const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+                const totalDays = new Date(year, month + 1, 0).getDate();
+                const prevTotalDays = new Date(year, month, 0).getDate();
+
+                for (let i = adjustedFirstDay; i > 0; i--) {
+                    const day = document.createElement('div');
+                    day.className = 'cal-day other-month';
+                    day.innerText = prevTotalDays - i + 1;
+                    grid.appendChild(day);
+                }
+
+                for (let i = 1; i <= totalDays; i++) {
+                    const day = document.createElement('div');
+                    day.className = 'cal-day';
+                    day.innerText = i;
+                    if (i === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
+                        day.classList.add('today');
+                    }
+                    grid.appendChild(day);
+                }
+
+                const totalCells = adjustedFirstDay + totalDays;
+                const nextMonthPadding = 42 - totalCells;
+                for (let i = 1; i <= nextMonthPadding; i++) {
+                    const day = document.createElement('div');
+                    day.className = 'cal-day other-month';
+                    day.innerText = i;
+                    grid.appendChild(day);
+                }
+            }
+            renderCalendar(currentCalDate);
+            
+            document.getElementById('cal-prev')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+                renderCalendar(currentCalDate);
+            });
+            document.getElementById('cal-next')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+                renderCalendar(currentCalDate);
+            });
+
+            /* SHELL TABS CONTROL */
+            function togglePanel(panel, focusInput = null) {
+                const isHidden = panel.classList.contains('hidden');
+                closeAllPanels(panel);
+
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (focusInput) {
+                        setTimeout(() => focusInput.focus(), 100);
+                    }
+                    document.getElementById('wallpaper').classList.add('wallpaper-zoom');
+                } else {
+                    panel.classList.add('hidden');
+                    document.getElementById('wallpaper').classList.remove('wallpaper-zoom');
+                }
+            }
+
+            function closeAllPanels(exceptPanel = null) {
+                const panels = [startMenu, quickSettings, calendarPanel, widgetsPanel, searchPanel];
+                panels.forEach(p => {
+                    if (p && p !== exceptPanel) {
+                        p.classList.add('hidden');
+                    }
+                });
+                document.getElementById('power-dropdown')?.classList.add('hidden');
+            }
+
+            document.getElementById('tb-start')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePanel(startMenu, document.getElementById('start-search-input'));
+            });
+            document.getElementById('tb-search')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePanel(searchPanel, document.getElementById('global-search-input'));
+            });
+            document.getElementById('tb-widgets')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePanel(widgetsPanel);
+            });
+            document.getElementById('tb-quick-settings')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePanel(quickSettings);
+            });
+            document.getElementById('tb-clock-date')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                togglePanel(calendarPanel);
+            });
+            document.getElementById('tb-show-desktop')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllPanels();
+                Object.keys(state.openWindows).forEach(appId => {
+                    const win = state.openWindows[appId];
+                    if (win && !win.classList.contains('minimizing') && win.style.display !== 'none') {
+                        window.minimizeWindow(appId);
+                    }
+                });
+            });
+
+            desktop.addEventListener('click', (e) => {
+                if (e.target === desktop || e.target.classList.contains('desktop-icons')) {
+                    closeAllPanels();
+                }
+            });
+
+            document.querySelectorAll('.recommended-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const fileKey = item.dataset.file;
+                    closeAllPanels();
+                    if (fileKey === 'notepad-guide') {
+                        window.openApp('notepad', 'ИНСТРУКЦИЯ ПО ИСПОЛЬЗОВАНИЮ:\n1. Дважды кликайте на иконки рабочего стола для запуска приложений.\n2. Перетаскивайте окна за шапку.\n3. Наводите на кнопку развертывания для выбора зон прикрепления (Snap Assist).\n4. Кастомизируйте обои и темы в параметрах!\n5. Устанавливайте новые приложения из Microsoft Store.');
+                    } else {
+                        alert(`Файл "${item.querySelector('.rec-title').innerText}" успешно открыт!`);
+                    }
+                });
+            });
+
+            /* QUICK SETTINGS SLIDERS */
+            const volumeSlider = document.getElementById('volume-slider');
+            const brightnessSlider = document.getElementById('brightness-slider');
+            const wifiTile = document.getElementById('qs-wifi');
+            const bluetoothTile = document.getElementById('qs-bluetooth');
+            const airplaneTile = document.getElementById('qs-airplane');
+
+            [wifiTile, bluetoothTile, airplaneTile].forEach(tile => {
+                tile?.addEventListener('click', () => {
+                    tile.classList.toggle('active');
+                    const isActive = tile.classList.contains('active');
+                    const subText = tile.querySelector('.qs-subtext');
+                    if (subText) {
+                        if (tile === wifiTile) subText.innerText = isActive ? "Подключено" : "Выключено";
+                        if (tile === bluetoothTile) subText.innerText = isActive ? "Вкл." : "Выкл.";
+                        if (tile === airplaneTile) subText.innerText = isActive ? "Вкл." : "Выкл.";
+                    }
+                });
+            });
+
+            volumeSlider?.addEventListener('input', (e) => {
+                const val = e.target.value;
+                const icon = document.getElementById('volume-icon');
+                const tbIcon = document.getElementById('tb-volume-icon');
+                const updateIconClass = (iconEl) => {
+                    if (!iconEl) return;
+                    iconEl.className = 'fa-solid';
+                    if (val == 0) iconEl.classList.add('fa-volume-xmark');
+                    else if (val < 30) iconEl.classList.add('fa-volume-off');
+                    else if (val < 70) iconEl.classList.add('fa-volume-low');
+                    else iconEl.classList.add('fa-volume-high');
+                };
+                updateIconClass(icon);
+                updateIconClass(tbIcon);
+            });
+
+            brightnessSlider?.addEventListener('input', (e) => {
+                const val = e.target.value;
+                const dimFactor = (100 - val) * 0.005;
+                document.getElementById('wallpaper').style.filter = `brightness(${1 - dimFactor})`;
+            });
+
+            document.getElementById('qs-settings-btn')?.addEventListener('click', () => {
+                closeAllPanels();
+                window.openApp('settings');
+            });
+
+            /* POWER dropdown */
+            const powerBtn = document.getElementById('power-btn');
+            const powerDropdown = document.getElementById('power-dropdown');
+
+            powerBtn?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                powerDropdown.classList.toggle('hidden');
+            });
+
+            document.getElementById('power-sleep')?.addEventListener('click', () => {
+                closeAllPanels();
+                screenOverlay.classList.remove('hidden');
+                lockScreen.classList.remove('hidden');
+            });
+
+            document.getElementById('power-restart')?.addEventListener('click', () => {
+                closeAllPanels();
+                screenOverlay.classList.remove('hidden');
+                restartScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    restartScreen.classList.add('hidden');
+                    screenOverlay.classList.add('hidden');
+                }, 4000);
+            });
+
+            document.getElementById('power-shutdown')?.addEventListener('click', () => {
+                closeAllPanels();
+                screenOverlay.classList.remove('hidden');
+                shutdownScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    shutdownScreen.classList.add('hidden');
+                    screenOverlay.innerHTML = `
+                        <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555; background-color:#000; cursor:pointer;" onclick="location.reload()">
+                            <i class="fa-solid fa-power-off" style="font-size: 48px; color: #333; margin-bottom: 20px;"></i>
+                            <span style="font-size:12px;">Нажмите для включения</span>
+                        </div>
+                    `;
+                }, 3000);
+            });
+
+            lockScreen?.addEventListener('click', () => {
+                lockScreen.classList.add('hidden');
+                screenOverlay.classList.add('hidden');
+            });
+
+            /* WINDOW MANAGER */
+            window.openApp = function(appId, initialData = null) {
+                closeAllPanels();
+
+                if (state.openWindows[appId]) {
+                    const win = state.openWindows[appId];
+                    if (win.style.display === 'none') {
+                        window.restoreWindow(appId);
+                    } else {
+                        bringToFront(win);
+                    }
+                    return;
+                }
+
+                const appConfig = window.AppTemplates[appId];
+                if (!appConfig) return;
+
+                const tbIcon = document.querySelector(`.taskbar-icon-container[data-app="${appId}"]`);
+                if (tbIcon) {
+                    tbIcon.classList.add('running', 'active');
+                }
+
+                const win = document.createElement('div');
+                win.className = 'window opening';
+                win.id = `window-${appId}`;
+                win.style.width = `${appConfig.width}px`;
+                win.style.height = `${appConfig.height}px`;
+                
+                const startLeft = Math.max(40, (window.innerWidth - appConfig.width) / 2 + (state.zStack.length * 20));
+                const startTop = Math.max(40, (window.innerHeight - appConfig.height) / 2 - 40 + (state.zStack.length * 20));
+                win.style.left = `${startLeft}px`;
+                win.style.top = `${startTop}px`;
+
+                win.innerHTML = `
+                    <div class="window-titlebar">
+                        <div class="window-title">
+                            <img src="${appConfig.icon}" alt="${appConfig.title}">
+                            <span>${appConfig.title}</span>
+                        </div>
+                        <div class="window-controls">
+                            <div class="window-control control-min" onclick="window.minimizeWindow('${appId}')">
+                                <i class="fa-solid fa-minus"></i>
+                            </div>
+                            <div class="window-control control-max-container">
+                                <div class="window-control control-max" onclick="window.maximizeWindow('${appId}')">
+                                    <i class="fa-regular fa-square"></i>
+                                </div>
+                                <div class="snap-dropdown hidden" id="snap-${appId}">
+                                    <div class="snap-layout" onclick="window.snapWindow('${appId}', 'left')">
+                                        <div class="snap-part" style="width: 50%; height: 100%;"></div>
+                                        <div class="snap-part" style="width: 50%; height: 100%;"></div>
+                                    </div>
+                                    <div class="snap-layout" onclick="window.snapWindow('${appId}', 'right')">
+                                        <div class="snap-part" style="width: 50%; height: 100%;"></div>
+                                        <div class="snap-part" style="width: 50%; height: 100%;"></div>
+                                    </div>
+                                    <div class="snap-layout" onclick="window.snapWindow('${appId}', 'left-wide')">
+                                        <div class="snap-part" style="width: 70%; height: 100%;"></div>
+                                        <div class="snap-part" style="width: 30%; height: 100%;"></div>
+                                    </div>
+                                    <div class="snap-layout" onclick="window.snapWindow('${appId}', 'right-wide')">
+                                        <div class="snap-part" style="width: 30%; height: 100%;"></div>
+                                        <div class="snap-part" style="width: 70%; height: 100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="window-control control-close" onclick="window.closeWindow('${appId}')">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="window-content">
+                        ${appConfig.getHTML()}
+                    </div>
+                    <div class="window-resize resize-t"></div>
+                    <div class="window-resize resize-r"></div>
+                    <div class="window-resize resize-b"></div>
+                    <div class="window-resize resize-l"></div>
+                    <div class="window-resize resize-se"></div>
+                    <div class="window-resize resize-sw"></div>
+                `;
+
+                win.addEventListener('animationend', (e) => {
+                    if (e.animationName === 'window-open') {
+                        win.classList.remove('opening');
+                    }
+                });
+
+                windowsContainer.appendChild(win);
+                state.openWindows[appId] = win;
+                bringToFront(win);
+
+                appConfig.init(win, initialData);
+
+                setupDragging(win);
+                setupResizing(win);
+                setupSnappingBehavior(win, appId);
+            };
+
+            window.closeWindow = function(appId) {
+                const win = state.openWindows[appId];
+                if (!win) return;
+
+                win.classList.add('closing');
+                win.addEventListener('animationend', () => {
+                    win.remove();
+                    delete state.openWindows[appId];
+                    state.zStack = state.zStack.filter(w => w !== win);
+                    const tbIcon = document.querySelector(`.taskbar-icon-container[data-app="${appId}"]`);
+                    if (tbIcon) {
+                        tbIcon.classList.remove('running', 'active');
+                    }
+                });
+            };
+
+            window.minimizeWindow = function(appId) {
+                const win = state.openWindows[appId];
+                const tbIcon = document.querySelector(`.taskbar-icon-container[data-app="${appId}"]`);
+                if (!win || !tbIcon) return;
+
+                win.dataset.preMinLeft = win.style.left;
+                win.dataset.preMinTop = win.style.top;
+                win.dataset.preMinWidth = win.style.width;
+                win.dataset.preMinHeight = win.style.height;
+
+                const rect = tbIcon.getBoundingClientRect();
+                const destX = rect.left - win.offsetLeft - (win.offsetWidth / 2);
+                const destY = rect.top - win.offsetTop - (win.offsetHeight / 2);
+                
+                win.style.setProperty('--min-x', `${destX}px`);
+                win.style.setProperty('--min-y', `${destY}px`);
+                win.classList.add('minimizing');
+                
+                win.addEventListener('animationend', function handler() {
+                    win.style.display = 'none';
+                    win.classList.remove('minimizing');
+                    tbIcon.classList.remove('active');
+                    win.removeEventListener('animationend', handler);
+                });
+            };
+
+            window.restoreWindow = function(appId) {
+                const win = state.openWindows[appId];
+                const tbIcon = document.querySelector(`.taskbar-icon-container[data-app="${appId}"]`);
+                if (!win || !tbIcon) return;
+
+                win.style.display = 'flex';
+                tbIcon.classList.add('active');
+                bringToFront(win);
+
+                win.animate([
+                    { transform: 'scale(0.3) translate3d(var(--min-x), var(--min-y), 0)', opacity: 0 },
+                    { transform: 'scale(1) translate3d(0, 0, 0)', opacity: 1 }
+                ], {
+                    duration: 300,
+                    easing: 'cubic-bezier(0.1, 0.9, 0.2, 1)'
+                });
+            };
+
+            window.maximizeWindow = function(appId) {
+                const win = state.openWindows[appId];
+                if (!win) return;
+
+                win.classList.add('maximizing');
+                
+                if (win.dataset.maximized === 'true') {
+                    win.style.width = win.dataset.preMaxWidth || '600px';
+                    win.style.height = win.dataset.preMaxHeight || '400px';
+                    win.style.left = win.dataset.preMaxLeft || '100px';
+                    win.style.top = win.dataset.preMaxTop || '100px';
+                    win.dataset.maximized = 'false';
+                    win.querySelector('.control-max i').className = 'fa-regular fa-square';
+                } else {
+                    win.dataset.preMaxWidth = win.style.width;
+                    win.dataset.preMaxHeight = win.style.height;
+                    win.dataset.preMaxLeft = win.style.left;
+                    win.dataset.preMaxTop = win.style.top;
+
+                    win.style.width = '100%';
+                    win.style.height = 'calc(100% - 48px)';
+                    win.style.left = '0';
+                    win.style.top = '0';
+                    win.dataset.maximized = 'true';
+                    win.querySelector('.control-max i').className = 'fa-regular fa-window-restore';
+                }
+                setTimeout(() => win.classList.remove('maximizing'), 300);
+            };
+
+            window.snapWindow = function(appId, area) {
+                const win = state.openWindows[appId];
+                if (!win) return;
+
+                win.classList.add('maximizing');
+                
+                win.dataset.preMaxWidth = win.style.width;
+                win.dataset.preMaxHeight = win.style.height;
+                win.dataset.preMaxLeft = win.style.left;
+                win.dataset.preMaxTop = win.style.top;
+
+                const maxH = 'calc(100% - 48px)';
+
+                if (area === 'left') {
+                    win.style.width = '50%';
+                    win.style.height = maxH;
+                    win.style.left = '0';
+                    win.style.top = '0';
+                } else if (area === 'right') {
+                    win.style.width = '50%';
+                    win.style.height = maxH;
+                    win.style.left = '50%';
+                    win.style.top = '0';
+                } else if (area === 'left-wide') {
+                    win.style.width = '70%';
+                    win.style.height = maxH;
+                    win.style.left = '0';
+                    win.style.top = '0';
+                } else if (area === 'right-wide') {
+                    win.style.width = '70%';
+                    win.style.height = maxH;
+                    win.style.left = '30%';
+                    win.style.top = '0';
+                }
+                
+                win.dataset.maximized = 'true';
+                setTimeout(() => win.classList.remove('maximizing'), 300);
+            };
+
+            window.toggleOrOpenApp = function(appId) {
+                const win = state.openWindows[appId];
+                if (win) {
+                    if (win.style.display === 'none') {
+                        window.restoreWindow(appId);
+                    } else if (state.zStack[state.zStack.length - 1] === win) {
+                        window.minimizeWindow(appId);
+                    } else {
+                        bringToFront(win);
+                    }
+                } else {
+                    window.openApp(appId);
+                }
+            };
+
+            function bringToFront(win) {
+                state.zStack = state.zStack.filter(w => w !== win);
+                state.zStack.push(win);
+                state.zStack.forEach((w, index) => {
+                    w.style.zIndex = state.topZ + index;
+                });
+                document.querySelectorAll('.taskbar-icon-container').forEach(icon => {
+                    icon.classList.remove('active');
+                });
+                const currentApp = win.id.replace('window-', '');
+                document.querySelector(`.taskbar-icon-container[data-app="${currentApp}"]`)?.classList.add('active');
+            }
+
+            document.querySelectorAll('.desktop-icon').forEach(icon => {
+                icon.addEventListener('dblclick', () => {
+                    const appId = icon.dataset.app;
+                    window.openApp(appId);
+                });
+                
+                let lastTap = 0;
+                icon.addEventListener('touchend', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTap;
+                    if (tapLength < 300 && tapLength > 0) {
+                        const appId = icon.dataset.app;
+                        window.openApp(appId);
+                        e.preventDefault();
+                    }
+                    lastTap = currentTime;
+                });
+            });
+
+            document.querySelectorAll('.taskbar-icon-container[data-app]').forEach(icon => {
+                icon.addEventListener('click', () => {
+                    const appId = icon.dataset.app;
+                    window.toggleOrOpenApp(appId);
+                });
+            });
+
+            windowsContainer.addEventListener('mousedown', (e) => {
+                const win = e.target.closest('.window');
+                if (win) {
+                    bringToFront(win);
+                }
+            });
+
+            /* DRAGGING (GPU-ACCELERATED) */
+            function setupDragging(win) {
+                const titlebar = win.querySelector('.window-titlebar');
+                let isDragging = false;
+                let startX, startY;
+                let startL, startT;
+
+                titlebar.addEventListener('mousedown', (e) => {
+                    if (win.dataset.maximized === 'true' || e.target.closest('.window-control')) return;
+
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startL = win.offsetLeft;
+                    startT = win.offsetTop;
+                    
+                    const dragOverlay = document.createElement('div');
+                    dragOverlay.id = 'window-drag-overlay';
+                    dragOverlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:999999; cursor:move;';
+                    desktop.appendChild(dragOverlay);
+
+                    document.addEventListener('mousemove', dragMove);
+                    document.addEventListener('mouseup', dragEnd);
+                });
+
+                function dragMove(e) {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    let newL = startL + dx;
+                    let newT = startT + dy;
+                    
+                    newT = Math.max(0, Math.min(window.innerHeight - 80, newT));
+                    newL = Math.max(-win.offsetWidth + 100, Math.min(window.innerWidth - 100, newL));
+
+                    win.style.left = `${newL}px`;
+                    win.style.top = `${newT}px`;
+                }
+
+                function dragEnd() {
+                    isDragging = false;
+                    document.getElementById('window-drag-overlay')?.remove();
+                    document.removeEventListener('mousemove', dragMove);
+                    document.removeEventListener('mouseup', dragEnd);
+                }
+
+                titlebar.addEventListener('dblclick', (e) => {
+                    if (e.target.closest('.window-control')) return;
+                    const appId = win.id.replace('window-', '');
+                    window.maximizeWindow(appId);
+                });
+            }
+
+            /* RESIZING MECHANICS */
+            function setupResizing(win) {
+                const handles = win.querySelectorAll('.window-resize');
+                handles.forEach(handle => {
+                    handle.addEventListener('mousedown', (e) => {
+                        if (win.dataset.maximized === 'true') return;
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const isRight = handle.classList.contains('resize-r') || handle.classList.contains('resize-se');
+                        const isLeft = handle.classList.contains('resize-l') || handle.classList.contains('resize-sw');
+                        const isBottom = handle.classList.contains('resize-b') || handle.classList.contains('resize-se') || handle.classList.contains('resize-sw');
+                        const isTop = handle.classList.contains('resize-t');
+
+                        const startWidth = win.offsetWidth;
+                        const startHeight = win.offsetHeight;
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        const startL = win.offsetLeft;
+                        const startT = win.offsetTop;
+
+                        const dragOverlay = document.createElement('div');
+                        dragOverlay.id = 'window-resize-overlay';
+                        dragOverlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:999999; cursor:' + window.getComputedStyle(handle).cursor + ';';
+                        desktop.appendChild(dragOverlay);
+
+                        document.addEventListener('mousemove', resizeMove);
+                        document.addEventListener('mouseup', resizeEnd);
+
+                        function resizeMove(e) {
+                            let w = startWidth;
+                            let h = startHeight;
+                            let l = startL;
+                            let t = startT;
+
+                            if (isRight) w = Math.max(320, startWidth + (e.clientX - startX));
+                            if (isLeft) {
+                                const dw = e.clientX - startX;
+                                w = Math.max(320, startWidth - dw);
+                                if (w > 320) l = startL + dw;
+                            }
+                            if (isBottom) h = Math.max(240, startHeight + (e.clientY - startY));
+                            if (isTop) {
+                                const dh = e.clientY - startY;
+                                h = Math.max(240, startHeight - dh);
+                                if (h > 240) t = startT + dh;
+                            }
+
+                            win.style.width = `${w}px`;
+                            win.style.height = `${h}px`;
+                            win.style.left = `${l}px`;
+                            win.style.top = `${t}px`;
+                        }
+
+                        function resizeEnd() {
+                            document.getElementById('window-resize-overlay')?.remove();
+                            document.removeEventListener('mousemove', resizeMove);
+                            document.removeEventListener('mouseup', resizeEnd);
+                        }
+                    });
+                });
+            }
+
+            /* SNAP ASSIST */
+            function setupSnappingBehavior(win, appId) {
+                const maxBtn = win.querySelector('.control-max-container');
+                const dropdown = win.querySelector(`.snap-dropdown`);
+
+                let timeout;
+                maxBtn?.addEventListener('mouseenter', () => {
+                    clearTimeout(timeout);
+                    dropdown.classList.remove('hidden');
+                });
+                maxBtn?.addEventListener('mouseleave', () => {
+                    timeout = setTimeout(() => {
+                        dropdown.classList.add('hidden');
+                    }, 300);
+                });
+                dropdown?.addEventListener('mouseenter', () => {
+                    clearTimeout(timeout);
+                });
+                dropdown?.addEventListener('mouseleave', () => {
+                    dropdown.classList.add('hidden');
+                });
+            }
+            
+            setTimeout(() => {
+                window.openApp('explorer');
+            }, 1200);
+        });
+    </script>
+</body>
+</html>
